@@ -13,6 +13,7 @@
 		C43B6C4D1C0A114A0050423A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C43B6C4C1C0A114A0050423A /* Assets.xcassets */; };
 		C43B6C501C0A114A0050423A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C43B6C4E1C0A114A0050423A /* LaunchScreen.storyboard */; };
 		C4AA92D81C0A17FB00B8E137 /* ToDoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AA92D71C0A17FB00B8E137 /* ToDoItem.swift */; settings = {ASSET_TAGS = (); }; };
+		C4AA92DC1C0A353B00B8E137 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4AA92DB1C0A353B00B8E137 /* TableViewCell.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		C43B6C4F1C0A114A0050423A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C43B6C511C0A114A0050423A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C4AA92D71C0A17FB00B8E137 /* ToDoItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToDoItem.swift; sourceTree = "<group>"; };
+		C4AA92DB1C0A353B00B8E137 /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 			children = (
 				C43B6C451C0A114A0050423A /* AppDelegate.swift */,
 				C43B6C471C0A114A0050423A /* ViewController.swift */,
+				C4AA92DB1C0A353B00B8E137 /* TableViewCell.swift */,
 				C4AA92D71C0A17FB00B8E137 /* ToDoItem.swift */,
 				C43B6C491C0A114A0050423A /* Main.storyboard */,
 				C43B6C4C1C0A114A0050423A /* Assets.xcassets */,
@@ -139,6 +142,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C43B6C481C0A114A0050423A /* ViewController.swift in Sources */,
+				C4AA92DC1C0A353B00B8E137 /* TableViewCell.swift in Sources */,
 				C43B6C461C0A114A0050423A /* AppDelegate.swift in Sources */,
 				C4AA92D81C0A17FB00B8E137 /* ToDoItem.swift in Sources */,
 			);
