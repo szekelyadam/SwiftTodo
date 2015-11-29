@@ -9,11 +9,11 @@
 import UIKit
 import QuartzCore
 
-// A UILable subclass that can optionally have a strikethrough
-class StrikeThroughText: UILabel {
+// A UILabel subclass that can optionally have a strikethrough.
+class StrikeThroughText: UITextField {
     let strikeThroughLayer: CALayer
-    // A boolean value that determines whether the layer should have a strikethrough
-    var strikeThrough: Bool {
+    // A Boolean value that determines whether the label should have a strikethrough.
+    var strikeThrough : Bool {
         didSet {
             strikeThroughLayer.hidden = !strikeThrough
             if strikeThrough {
@@ -43,16 +43,9 @@ class StrikeThroughText: UILabel {
     
     let kStrikeOutThickness: CGFloat = 2.0
     func resizeStrikeThrough() {
-        let textSize = text!.sizeWithAttributes([NSFontAttributeName:font])
-        strikeThroughLayer.frame = CGRect(x: 0, y: bounds.size.height/2, width: textSize.width, height: kStrikeOutThickness)
+        let nsText: NSString = text! as NSString
+        let textSize = nsText.sizeWithAttributes([NSFontAttributeName: UIFont.systemFontOfSize(16.0)])
+        strikeThroughLayer.frame = CGRect(x: 0, y: bounds.size.height/2,
+            width: textSize.width, height: kStrikeOutThickness)
     }
-    
-    /*
-    // Only override drawRect: if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func drawRect(rect: CGRect) {
-        // Drawing code
-    }
-    */
-
 }

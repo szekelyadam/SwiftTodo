@@ -15,7 +15,7 @@ protocol TableViewCellDelegate {
     func toDoItemDeleted(toDoItem: ToDoItem)
 }
 
-class TableViewCell: UITableViewCell {
+class TableViewCell: UITableViewCell, UITextFieldDelegate {
 
     let gradientLayer = CAGradientLayer()
     var originalCenter = CGPoint()
@@ -64,6 +64,9 @@ class TableViewCell: UITableViewCell {
         crossLabel.textAlignment = .Left
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        label.delegate = self
+        label.contentVerticalAlignment = .Center
         
         addSubview(label)
         addSubview(tickLabel)
@@ -160,5 +163,27 @@ class TableViewCell: UITableViewCell {
             return false
         }
         return false
+    }
+    
+    // MARK: - UITextFieldDelegate methods
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        // close the keyboard on enter
+        textField.resignFirstResponder()
+        return false
+    }
+    
+    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+        // disable editing of completed todo items
+        if toDoItem != nil {
+            return !toDoItem!.completed
+        }
+        return false
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        if toDoItem != nil {
+            toDoItem!.text = textField.text!
+        }
     }
 }

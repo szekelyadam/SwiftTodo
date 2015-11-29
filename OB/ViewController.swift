@@ -58,6 +58,32 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         // could removeAtIndex in the loop but kepp it here for when indexOfObject works
         toDoItems.removeAtIndex(index)
         
+        // loop over the visible cells to animate delete
+        let visibleCells = tableView.visibleCells as! [TableViewCell]
+        let lastView = visibleCells[visibleCells.count - 1] as TableViewCell
+        var delay = 0.0
+        var startAnimating = false
+        for i in 0..<visibleCells.count {
+            let cell = visibleCells[i]
+            if startAnimating {
+                UIView.animateWithDuration(0.3, delay: delay, options: .CurveEaseInOut,
+                    animations: {() in
+                        cell.frame = CGRectOffset(cell.frame, 0.0,
+                            -cell.frame.size.height)},
+                    completion: {(finished: Bool) in
+                        if (cell == lastView) {
+                            self.tableView.reloadData()
+                        }
+                    }
+                )
+                delay += 0.03
+            }
+            if cell.toDoItem === toDoItem {
+                startAnimating = true
+                cell.hidden = true
+            }
+        }
+        
         // use the UITableView to animate the removal of this row
         tableView.beginUpdates()
         let indexPathForRow = NSIndexPath(forRow: index, inSection: 0)
