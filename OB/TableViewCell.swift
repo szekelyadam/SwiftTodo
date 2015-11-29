@@ -22,6 +22,7 @@ class TableViewCell: UITableViewCell {
     var deleteOnDragRelease = false, completeOnDragRelease = false
     let label: StrikeThroughText
     var itemCompleteLayer = CALayer()
+    var tickLabel: UILabel, crossLabel: UILabel
     
     // The object that acts as delegate for this cell
     var delegate: TableViewCellDelegate?
@@ -45,9 +46,29 @@ class TableViewCell: UITableViewCell {
         label.font = UIFont.boldSystemFontOfSize(16)
         label.backgroundColor = UIColor.clearColor()
         
+        // utility method for creating the contextual cues
+        func createCueLabel() -> UILabel {
+            let label = UILabel(frame: CGRect.null)
+            label.textColor = UIColor.whiteColor()
+            label.font = UIFont.boldSystemFontOfSize(32.0)
+            label.backgroundColor = UIColor.clearColor()
+            return label
+        }
+        
+        // tick and cross labels for context cues
+        tickLabel = createCueLabel()
+        tickLabel.text = "\u{2713}"
+        tickLabel.textAlignment = .Right
+        crossLabel = createCueLabel()
+        crossLabel.text = "\u{2717}"
+        crossLabel.textAlignment = .Left
+        
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         addSubview(label)
+        addSubview(tickLabel)
+        addSubview(crossLabel)
+        
         // remove the default highlight for selected cells
         selectionStyle = .None
         
@@ -73,6 +94,7 @@ class TableViewCell: UITableViewCell {
         addGestureRecognizer(recognizer)
     }
     
+    let kUICuesMargin: CGFloat = 10.0, kUICuesWidth: CGFloat = 50.0
     let kLabelLeftMargin: CGFloat = 15.0
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -80,6 +102,8 @@ class TableViewCell: UITableViewCell {
         gradientLayer.frame = bounds
         itemCompleteLayer.frame = bounds
         label.frame = CGRect(x: kLabelLeftMargin, y: 0, width: bounds.size.width - kLabelLeftMargin, height: bounds.size.height)
+        tickLabel.frame = CGRect(x: -kUICuesWidth - kUICuesMargin, y: 0, width: kUICuesWidth, height: bounds.size.height)
+        crossLabel.frame = CGRect(x: bounds.size.width + kUICuesMargin, y: 0, width: kUICuesWidth, height: bounds.size.height)
     }
     
     func handlePan(recognizer: UIPanGestureRecognizer) {
@@ -91,9 +115,18 @@ class TableViewCell: UITableViewCell {
         if recognizer.state == .Changed {
             let translation = recognizer.translationInView(self)
             center = CGPointMake(originalCenter.x + translation.x, originalCenter.y)
+            
             // has the user dragged the item far enough the initiate a delete/complete?
             deleteOnDragRelease = frame.origin.x < -frame.size.width / 2.0
             completeOnDragRelease = frame.origin.x > frame.size.width / 2.0
+            
+            // fade the contextual cues
+            let cueAlpha = fabs(frame.origin.x) / (frame.size.width / 2.0)
+            tickLabel.alpha = cueAlpha
+            crossLabel.alpha = cueAlpha
+            // indicate when the user has pulled the item far enough to invoke the given action
+            tickLabel.textColor = completeOnDragRelease ? UIColor.greenColor() : UIColor.blackColor()
+            crossLabel.textColor = deleteOnDragRelease ? UIColor.redColor() : UIColor.blackColor()
         }
         
         if recognizer.state == .Ended {
