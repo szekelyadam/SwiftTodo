@@ -19,18 +19,37 @@ class TableViewCell: UITableViewCell {
 
     let gradientLayer = CAGradientLayer()
     var originalCenter = CGPoint()
-    var deleteOnDragRelease = false
+    var deleteOnDragRelease = false, completeOnDragRelease = false
+    let label: StrikeThroughText
+    var itemCompleteLayer = CALayer()
+    
     // The object that acts as delegate for this cell
     var delegate: TableViewCellDelegate?
     // The item that this cell renders
-    var toDoItem: ToDoItem?
+    var toDoItem: ToDoItem? {
+        didSet {
+            label.text = toDoItem!.text
+            label.strikeThrough = toDoItem!.completed
+            itemCompleteLayer.hidden = !label.strikeThrough
+        }
+    }
     
     required init(coder aDecoder: NSCoder) {
         fatalError("NSCoding not supported")
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        // create a label that renders the todo item text
+        label = StrikeThroughText(frame: CGRect.null)
+        label.textColor = UIColor.whiteColor()
+        label.font = UIFont.boldSystemFontOfSize(16)
+        label.backgroundColor = UIColor.clearColor()
+        
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        addSubview(label)
+        // remove the default highlight for selected cells
+        selectionStyle = .None
         
         // gradient layer for cell
         gradientLayer.frame = bounds
@@ -42,15 +61,25 @@ class TableViewCell: UITableViewCell {
         gradientLayer.locations = [0.0, 0.01, 0.95, 1.0]
         layer.insertSublayer(gradientLayer, atIndex: 0)
         
+        // add a layer, that renders a green background when an item is completed
+        itemCompleteLayer = CALayer(layer: layer)
+        itemCompleteLayer.backgroundColor = UIColor(red: 0.0, green: 0.6, blue: 0.0, alpha: 1.0).CGColor
+        itemCompleteLayer.hidden = true
+        layer.insertSublayer(itemCompleteLayer, atIndex: 0)
+        
         // add a pan recognizer
         var recognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
         recognizer.delegate = self
         addGestureRecognizer(recognizer)
     }
     
+    let kLabelLeftMargin: CGFloat = 15.0
     override func layoutSubviews() {
         super.layoutSubviews()
+        // ensure the gradien layer occupies the full bounds
         gradientLayer.frame = bounds
+        itemCompleteLayer.frame = bounds
+        label.frame = CGRect(x: kLabelLeftMargin, y: 0, width: bounds.size.width - kLabelLeftMargin, height: bounds.size.height)
     }
     
     func handlePan(recognizer: UIPanGestureRecognizer) {
@@ -64,19 +93,27 @@ class TableViewCell: UITableViewCell {
             center = CGPointMake(originalCenter.x + translation.x, originalCenter.y)
             // has the user dragged the item far enough the initiate a delete/complete?
             deleteOnDragRelease = frame.origin.x < -frame.size.width / 2.0
+            completeOnDragRelease = frame.origin.x > frame.size.width / 2.0
         }
         
         if recognizer.state == .Ended {
             // the frame this cell had before user dragged it
             let originalFrame = CGRect(x: 0, y: frame.origin.y, width: bounds.size.width, height: bounds.size.height)
-            if !deleteOnDragRelease {
-                // if the item is not being deleted, snap back to the original location
-                UIView.animateWithDuration(0.2, animations: {self.frame = originalFrame})
-            } else {
+            if deleteOnDragRelease {
                 if delegate != nil && toDoItem != nil {
                     // notify the delegate that this item should be deleted
                     delegate!.toDoItemDeleted(toDoItem!)
                 }
+            } else if completeOnDragRelease {
+                if toDoItem != nil {
+                    toDoItem!.completed = true
+                }
+                label.strikeThrough = true
+                itemCompleteLayer.hidden = false
+                UIView.animateWithDuration(0.2, animations: {self.frame = originalFrame})
+            } else {
+                // if the item is not being deleted, snap back to the original location
+                UIView.animateWithDuration(0.2, animations: {self.frame = originalFrame})
             }
         }
     }
